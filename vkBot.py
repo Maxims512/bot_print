@@ -1,10 +1,12 @@
-import vk_api, random, json
+import vk_api
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 
-import messageHandlerKeyboard, createKeyboard
+import messageHandlerKeyboard
+import messageHandlerText
 from config import token
 from config import admin_id
-#from main import MyLongPoll
+
+descriptionTime = False
 
 class MyLongPoll(VkBotLongPoll):
     def listen(self):
@@ -23,8 +25,6 @@ class VkBot:
 
 
     def send_message(self, recipient, message, link, keyboard=None):
-
-
         self.vk_session.method('messages.send', {
             'user_id': recipient,
             'message': message,
@@ -33,23 +33,28 @@ class VkBot:
         })
 
 
+
     def run(self):
         for event in self.longpoll.listen():
+            print(event.object)
+
             if event.type == VkBotEventType.MESSAGE_NEW:
                 msg = event.object.message
                 user_id = msg['from_id']
                 chat_id = msg['peer_id']
+                messageText = msg['text'].lower()
 
-                text = msg['text'].lower()
+                text = messageHandlerText.answer(messageText)
 
-                keyboard = messageHandlerKeyboard.mainProcessor(text)
+                keyboard = messageHandlerKeyboard.mainProcessor(messageText)
                 print(user_id)
 
-                print(keyboard)
-                if ((user_id == 346029605 or user_id == 16889713) and keyboard == None):
-                    VkBot.send_message(self, user_id, "Я вас не понимаю", "")
+
 
 
                 if ((user_id == 346029605 or user_id == 16889713) and keyboard != None):
                     VkBot.send_message(self, user_id, text, "", keyboard)
+
+                if ((user_id == 346029605 or user_id == 16889713) and keyboard == None):
+                    VkBot.send_message(self, user_id, text, "")
 

@@ -21,7 +21,6 @@ def createKeyboard(line, column, titles):
         str2 = []
         for j in range(line):
             if k < len(titles):
-                print(k)
                 str2.append(getBut(titles[k], "positive"))
                 k+=1
         str[i]=str2

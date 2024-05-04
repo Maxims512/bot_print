@@ -9,8 +9,8 @@ def mainProcessor(message):
     if (message.lower() == "записаться на стирку"):
         keyboard = laundryAppointment()
 
-    if (message.lower() == "В начало"):
-        keyboard = start()
+    if (message.lower() == "выставить товар"):
+        keyboard = None
 
     return keyboard
 
@@ -24,8 +24,8 @@ def laundryAppointment():
         title = ["Тут будет свободное время для записи"]
         keyboard = createKeyboard.createKeyboard(1,1,title)
     else:
-        title = ["Назад"]
-        keyboard = createKeyboard.createKeyboard(1, 1, title)
+        title = ["ЗАНЯТО", "ЗАНЯТО", "ЗАНЯТО", "ЗАНЯТО"]
+        keyboard = createKeyboard.createKeyboard(2, 2, title)
 
     return keyboard
 

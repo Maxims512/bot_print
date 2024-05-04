@@ -1,2 +1,2 @@
 
-isFreeWashMashines = True
+isFreeWashMashines = False
