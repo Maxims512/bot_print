@@ -1,0 +1,2 @@
+
+isFreeWashMashines = True
