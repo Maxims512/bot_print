@@ -1,8 +1,8 @@
-import vk_api, random, event
+import vk_api, random
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 from config import token
 from config import admin_id
-from event import Event
+
 
 class MyLongPoll(VkBotLongPoll):
     def listen(self):
