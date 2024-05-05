@@ -28,25 +28,29 @@ class FullMessage:
 
 
     def __init__(self, msgObject):
-        photo = ""
-        if (len(msgObject.message['attachments'])) > 0:
-            photo = msgObject.message['attachments'][0]['photo']['sizes'][3]['url']
+        userId = msgObject.message['from_id']
+        chatId = msgObject.message['peer_id']
+        if (chatId == 2000000004):
+            db.db.addPerson(msgObject.message['from_id'])
 
-        if (photo != ""):
-            self.setPhoto(photo)
+        if (not db.db.verifyPerson(msgObject.message['from_id'])):
+            self.setUserId(userId)
+            self.setAnswer("Чтобы начать пользоваться ботом напишите любое сообщение в беседу общежития")
+            self.setKeyboard(messageHandlerKeyboard.getEmpty())
 
+        else:
+            photo = ""
+            if (len(msgObject.message['attachments'])) > 0:
+                photo = msgObject.message['attachments'][0]['photo']['sizes'][3]['url']
 
-        msg = msgObject.message
-        userId = msg['from_id']
-        chatId = msg['peer_id']
+            if (photo != ""):
+                self.setPhoto(photo)
 
-
-        userText = msg['text'].lower()
-        lastMessage = userText
-
-        self.setUserId(userId)
-        self.setAnswer(messageHandlerText.answer(userText, lastMessage, self))
-        self.setKeyboard(messageHandlerKeyboard.mainProcessor(userText))
+            userText = msgObject.message['text'].lower()
+            lastMessage = userText
+            self.setUserId(userId)
+            self.setAnswer(messageHandlerText.answer(userText, lastMessage, self))
+            self.setKeyboard(messageHandlerKeyboard.mainProcessor(userText))
 
 
 
