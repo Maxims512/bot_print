@@ -24,7 +24,6 @@ def createKeyboard(line, column, titles):
                 str2.append(getBut(titles[k], "positive"))
                 k+=1
         str[i]=str2
-
     keyboard = {
         "one_time": False,
         "buttons": str

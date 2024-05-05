@@ -1,12 +1,11 @@
-import vk_api
+import vk_api, random
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
-
+import FullMessage
 import messageHandlerKeyboard
-import messageHandlerText
+import FullMessage
 from config import token
 from config import admin_id
 
-descriptionTime = False
 
 class MyLongPoll(VkBotLongPoll):
     def listen(self):
@@ -19,42 +18,28 @@ class MyLongPoll(VkBotLongPoll):
 
 
 class VkBot:
+
     def __init__(self):
         self.vk_session = vk_api.VkApi(token=token)
         self.longpoll = MyLongPoll(self.vk_session, admin_id)
 
 
-    def send_message(self, recipient, message, link, keyboard=None):
+    def send_message(self, userId, message, keyboard=None, attachment = None):
         self.vk_session.method('messages.send', {
-            'user_id': recipient,
+            'user_id': userId,
             'message': message,
-            'random_id': 0,
+            'random_id': random.random(),
             'keyboard': keyboard,
+            'attachment':attachment
         })
-
-
 
     def run(self):
         for event in self.longpoll.listen():
-            print(event.object)
 
             if event.type == VkBotEventType.MESSAGE_NEW:
-                msg = event.object.message
-                user_id = msg['from_id']
-                chat_id = msg['peer_id']
-                messageText = msg['text'].lower()
+                answer = FullMessage.FullMessage(event.object)
 
-                text = messageHandlerText.answer(messageText)
+                if ((event.object.message['from_id'] == 346029605 or event.object.message['from_id'] == 16889713)):
+                    VkBot.send_message(self, answer.getUserId(), answer.getText(), answer.getKeyboard(), answer.getPhoto())
 
-                keyboard = messageHandlerKeyboard.mainProcessor(messageText)
-                print(user_id)
-
-
-
-
-                if ((user_id == 346029605 or user_id == 16889713) and keyboard != None):
-                    VkBot.send_message(self, user_id, text, "", keyboard)
-
-                if ((user_id == 346029605 or user_id == 16889713) and keyboard == None):
-                    VkBot.send_message(self, user_id, text, "")
 

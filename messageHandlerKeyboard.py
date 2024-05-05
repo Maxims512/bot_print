@@ -3,13 +3,13 @@ import db
 
 def mainProcessor(message):
     keyboard = start()
-    if (message.lower() == "начать"):
+    if (message == "начать"):
         keyboard = start()
 
-    if (message.lower() == "записаться на стирку"):
+    if (message == "записаться на стирку"):
         keyboard = laundryAppointment()
 
-    if (message.lower() == "выставить товар"):
+    if (message == "выставить товар"):
         keyboard = None
 
     return keyboard
