@@ -33,7 +33,7 @@ def getEmpty():
     return keyboard
 
 def checkWashingDay():
-    if len(db.db.getFreeWashingTime(1)) > 0:
+    if len(db.db.getFreeWashingDay(1)) > 0:
         days = ["ПН", "ВТ", "СР", "ЧТ", "ПТ"]
         freeWashingDay = []
         for k in range(1,6):
@@ -41,16 +41,6 @@ def checkWashingDay():
                 if (i[0] == str(k)):
                     freeWashingDay.append(days[k-1])
                     break
-                # if (i[0] == "2"):
-                #     freeWashingDay.append("ВТ")
-                # if (i[0] == "3"):
-                #     freeWashingDay.append("СР")
-                # if (i[0] == "4"):
-                #     freeWashingDay.append("ЧТ")
-                # if (i[0] == "5"):
-                #     freeWashingDay.append("ПТ")
-
-
 
 
         keyboard = createKeyboard.createKeyboard(1,len(db.db.getFreeWashingTime(1)), freeWashingDay)

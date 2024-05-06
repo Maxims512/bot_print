@@ -1,11 +1,17 @@
 import messageHandlerKeyboard
 import messageHandlerText
 import db
+
+
+def addUser(id):
+    db.db.addPerson(id)
+
 class FullMessage:
     __userId = None
     __keyboard = None
     __answer = None
     __photo = None
+
 
     def setUserId(self, userId):
         self.__userId = userId
@@ -30,18 +36,20 @@ class FullMessage:
     def __init__(self, msgObject):
         userId = msgObject.message['from_id']
         chatId = msgObject.message['peer_id']
-        if (chatId == 2000000004):
+        print(chatId)
+        if (chatId == 2000000001):
             db.db.addPerson(msgObject.message['from_id'])
 
         if (not db.db.verifyPerson(msgObject.message['from_id'])):
+            print('не вериф пользователь')
             self.setUserId(userId)
             self.setAnswer("Чтобы начать пользоваться ботом напишите любое сообщение в беседу общежития")
             self.setKeyboard(messageHandlerKeyboard.getEmpty())
 
         else:
             photo = ""
-            if (len(msgObject.message['attachments'])) > 0:
-                photo = msgObject.message['attachments'][0]['photo']['sizes'][3]['url']
+            # if (len(msgObject.message['attachments'])) > 0:
+            #     photo = msgObject.message['attachments'][0]['photo']['sizes'][3]['url']
 
             if (photo != ""):
                 self.setPhoto(photo)

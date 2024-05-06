@@ -4,8 +4,8 @@ class Product:
     __description = ""
     __photo = ""
 
-    def __init__(self, id, price, descriptiom, photo):
+    def __init__(self, id, price, description, photo):
         self.__id = id
         self.__price = price
-        self.__description = descriptiom
+        self.__description = description
         self.__photo = photo

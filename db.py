@@ -1,20 +1,76 @@
+# import psycopg2
+# from dbConfig import host, user, password, db_name, port
+#
+# conn = psycopg2.connect(host="localhost", database="postgres", user="postgres",
+#                         password="1234", port=5432)
+#
+#
+#
+# cur = conn.cursor()
+# cur.execute("""CREATE TABLE IF NOT EXISTS users (
+#     id INT,
+#     last_message VARCHAR(255)
+# )""")
+#
+# conn.commit()
+# cur.close()
+# conn.close()
 
 class db:
-    def getPhoto(id):
-        return "photo-206143282_457243339"
+    __attr = {
+        "person" : {},
+        "washingTime" : {}
+    }
+    def __init__(self):
+        self.__dict__ = self.__attr
 
-    def verifyPerson(id):
-        return True
-    def addPerson(id):
-        name = 1
-    def addProduct(user_id, name, surname, price, description):
-        name = 1
+    def addPerson(self, id):
+        self.__attr["person"][id] = ""
 
-    def getFreeWashingTime(id):
-        #тут запрос к базе
-        freeTime = ['3_11', '2_13', '4_14']
-        return freeTime
+    def setLastMessage(self, id, message):
+        self.__attr["person"]["id"] = message
 
-    def setWashingTime(self, id, time):
-        #тут запрос к базе
-        id = 0
+    def verifyPerson(self, id):
+        print(self.__attr["person"])
+        if (id in self.__attr["person"].keys()):
+            return True
+        else:
+            return False
+
+    def getLastMessage(self, id):
+        return self.person[id]
+
+    def getFreeWashingDay(self, i):
+        freeDays = []
+        for day in range(1, 6):
+            if (len(self.getFreeWashingTime(day))>0):
+                freeDays.append(day)
+        return freeDays
+
+    def getWashings(self, i):
+        return self.washingTime
+
+
+    def getFreeWashingTime(self, day):
+        washingTime = self.getWashings(1)
+        freeWashingTime = []
+        for time in range(11, 16):
+            if (str(day)+"_"+str(time) not in washingTime.values()):
+                freeWashingTime.append(str(day)+"_"+str(time))
+        return freeWashingTime
+
+    def setWashings(self, id, washingTime):
+        self.washingTime[id]= washingTime
+
+
+
+db = db()
+db.addPerson(1)
+print(db.verifyPerson(1))
+
+
+
+
+
+
+
