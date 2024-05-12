@@ -17,6 +17,7 @@ def mainProcessor(message):
 def start():
     title = ["Записаться на стирку", "Отдать стирку", "Посмотреть товары", "Выставить товар", "Мероприятия"]
     keyboard = createKeyboard.createKeyboard(5,1, title)
+
     return keyboard
 
 def laundryAppointment():
@@ -33,19 +34,20 @@ def getEmpty():
     return keyboard
 
 def checkWashingDay():
-    if len(db.db.getFreeWashingDay(1)) > 0:
-        days = ["ПН", "ВТ", "СР", "ЧТ", "ПТ"]
+    dab = db.db()
+    if len(dab.getFreeWashingDay()) > 0:
+        days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"]
         freeWashingDay = []
         for k in range(1,6):
-            for i in db.db.getFreeWashingTime(1):
-                if (i[0] == str(k)):
+            for i in dab.getFreeWashingDay():
+                if (i == k):
                     freeWashingDay.append(days[k-1])
                     break
 
 
-        keyboard = createKeyboard.createKeyboard(1,len(db.db.getFreeWashingTime(1)), freeWashingDay)
+        keyboard = createKeyboard.createKeyboard(len(dab.getFreeWashingDay()), 1, freeWashingDay)
         return keyboard
     else:
         return getEmpty()
 
-print(checkWashingDay())
+

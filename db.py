@@ -25,52 +25,45 @@ class db:
         self.__dict__ = self.__attr
 
     def addPerson(self, id):
-        self.__attr["person"][id] = ""
+        self.__attr["person"][str(id)] = ""
 
     def setLastMessage(self, id, message):
-        self.__attr["person"]["id"] = message
+        self.__attr["person"][str(id)] = message
 
     def verifyPerson(self, id):
-        print(self.__attr["person"])
-        if (id in self.__attr["person"].keys()):
+
+        if (str(id) in self.__attr["person"].keys()):
             return True
         else:
             return False
 
     def getLastMessage(self, id):
-        return self.person[id]
+        if (str(id) in self.__attr["person"].keys()):
+            return self.__attr["person"][str(id)]
+        else:
+            return ""
 
-    def getFreeWashingDay(self, i):
+    def getFreeWashingDay(self):
         freeDays = []
         for day in range(1, 6):
             if (len(self.getFreeWashingTime(day))>0):
                 freeDays.append(day)
         return freeDays
 
-    def getWashings(self, i):
-        return self.washingTime
+    # def getWashings(self, i):
+    #     return self.__attr["washingTime"]
 
 
     def getFreeWashingTime(self, day):
-        washingTime = self.getWashings(1)
+        washingTime = self.__attr["washingTime"]
         freeWashingTime = []
         for time in range(11, 16):
             if (str(day)+"_"+str(time) not in washingTime.values()):
                 freeWashingTime.append(str(day)+"_"+str(time))
         return freeWashingTime
 
-    def setWashings(self, id, washingTime):
-        self.washingTime[id]= washingTime
 
 
-
-db = db()
-db.addPerson(1)
-print(db.verifyPerson(1))
-
-
-
-
-
-
+    # def setWashings(self, id, washingTime):
+    #     self.washingTime[id]= washingTime
 

@@ -1,5 +1,5 @@
 import json
-
+from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 def getBut(text, color):
     return {
                 "action": {
@@ -10,30 +10,20 @@ def getBut(text, color):
                 "color": f"{color}"
             }
 
-def createKeyboard(line, column, titles):
+def createKeyboard(column, line, titles):
+    keyboard = VkKeyboard(one_time=True)
+
     if (column == 0 or line == 0):
         return json.dumps({ "one_time": True, "buttons": []}, ensure_ascii=False).encode('utf-8')
 
-    str = [[]]
-    str2 = []
-    for i in range(line-1):
-        str.append(str2)
-
     k = 0
-    for i in range(0, line):
-        str2 = []
-        for j in range(column):
+    for i in range(column):
+        for j in range(0, line):
             if k < len(titles):
-                str2.append(getBut(titles[k], "positive"))
+                keyboard.add_button(titles[k], color=VkKeyboardColor.PRIMARY)
                 k+=1
-        str[i]=str2
-    keyboard = {
-        "one_time": True,
-        "buttons": str
-    }
-
-
-    keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
-    return keyboard
+        if (k < len(titles)):
+            keyboard.add_line()
+    return keyboard.get_keyboard()
 
 

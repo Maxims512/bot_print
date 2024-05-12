@@ -1,6 +1,7 @@
 import vk_api, random
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 import FullMessage
+import db
 from config import token
 from config import admin_id
 
@@ -34,8 +35,6 @@ class VkBot:
     def run(self):
         for event in self.longpoll.listen():
 
-
-
             if (event.type == VkBotEventType.MESSAGE_NEW and event.object.message['peer_id'] == 2000000001):
                  FullMessage.addUser(event.object.message['from_id'])
             #     answer = FullMessage.FullMessage(event.object)
@@ -47,11 +46,14 @@ class VkBot:
             #     })
 
             if event.type == VkBotEventType.MESSAGE_NEW and event.object.message['id'] != 0:
+                dab = db.db()
+                print(dab.getLastMessage(event.object.message['from_id']))
                 answer = FullMessage.FullMessage(event.object)
                 self.vk_session.method('messages.send', {
                     'user_id': answer.getUserId(),
                     'message': answer.getText(),
                     "random_id": random.random(),
-                    "attachment" : answer.getKeyboard()
+                    "attachment" : answer.getKeyboard(),
+                    "keyboard" : answer.getKeyboard()
                 })
 
