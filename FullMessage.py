@@ -51,9 +51,9 @@ class FullMessage:
 
         else:
 
-            photo = ""
-            # if (len(msgObject.message['attachments'])) > 0:
-            #     photo = msgObject.message['attachments'][0]['photo']['sizes'][3]['url']
+
+            if (len(msgObject.message['attachments'])) > 0:
+                 photo = msgObject.message['attachments'][0]['photo']['sizes'][3]['url']
 
             if (photo != ""):
                 self.setPhoto(photo)
