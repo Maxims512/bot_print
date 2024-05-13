@@ -64,9 +64,40 @@ def addWashing(user_id, date):
     )
     connection.autocommit = True
     with connection.cursor() as cursor:
+        if verifyPerson(user_id):
+            cursor.execute(
+                f"""INSERT INTO washingTime (user_id, date) values ({user_id}, '{date}');"""
+            )
+
+def getFreeWashingTime(day):
+    freeWashingDays = []
+    washings = []
+    washingsTime = []
+    connection = psycopg2.connect(
+        host=host,
+        user=user,
+        password=password,
+        database=db_name
+    )
+    connection.autocommit = True
+    with connection.cursor() as cursor:
         cursor.execute(
-            f"""INSERT INTO washingTime (user_id, date) values ({user_id}, '{date}');"""
+            f"""SELECT date FROM washingTime;"""
         )
+        washings = cursor.fetchall()
+
+
+    for i in washings:
+        if i[0].day == day:
+            washingsTime.append(i[0].hour)
+
+    print(washingsTime)
+
+
+
+
+
+
 
 def getCountWashFromTime(dateTime):
     connection = psycopg2.connect(
