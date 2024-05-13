@@ -10,7 +10,7 @@ def getBut(text, color):
                 "color": f"{color}"
             }
 
-def createKeyboard(column, line, titles):
+def createKeyboard(line,column, titles):
     keyboard = VkKeyboard(one_time=True)
 
     if (column == 0 or line == 0):

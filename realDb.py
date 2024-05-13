@@ -55,6 +55,7 @@ def verifyPerson(user_id):
         )
         return cursor.fetchone()[0]>0
 
+
 def addWashing(user_id, date):
     connection = psycopg2.connect(
         host=host,
@@ -66,13 +67,10 @@ def addWashing(user_id, date):
     with connection.cursor() as cursor:
         if verifyPerson(user_id):
             cursor.execute(
-                f"""INSERT INTO washingTime (user_id, date) values ({user_id}, '{date}');"""
+                f"""INSERT INTO washingTime (user_id, date) values ('{user_id}', '{date}');"""
             )
 
 def getFreeWashingTime(day):
-    freeWashingDays = []
-    washings = []
-    washingsTime = []
     connection = psycopg2.connect(
         host=host,
         user=user,
@@ -86,14 +84,26 @@ def getFreeWashingTime(day):
         )
         washings = cursor.fetchall()
 
-
+    washingTime = {"11": "0", "12": "0", "13": "0", "14": "0", "15": "0"}
     for i in washings:
         if i[0].day == day:
-            washingsTime.append(i[0].hour)
+            washingTime[str(i[0].hour)] = str(int(washingTime[str(i[0].hour)]) + 1)
 
-    print(washingsTime)
+    freeWashingTime = []
+    for hour in range(11, 16):
+        if (int(washingTime[str(hour)]) < 5):
+            freeWashingTime.append(hour)
+
+    return freeWashingTime
 
 
+
+def getFreeWashingDay():
+    freeWashingDay = []
+    for day in getNextWeek():
+        if (len(getFreeWashingTime(day))>0):
+            freeWashingDay.append(day)
+    return freeWashingDay
 
 
 
@@ -126,6 +136,60 @@ def getCountWashFromPerson(user_id):
             f"""SELECT COUNT(*) FROM washingTime WHERE user_id = '{user_id}';"""
         )
         return cursor.fetchone()[0]
+
+def getNextWeek():
+    nextWeek = []
+    connection = psycopg2.connect(
+        host=host,
+        user=user,
+        password=password,
+        database=db_name
+    )
+    connection.autocommit = True
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """SELECT now();"""
+        )
+        nextWeek.append(cursor.fetchone()[0].day)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """SELECT now()+'1 day';"""
+        )
+        nextWeek.append(cursor.fetchone()[0].day)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """SELECT now()+'2 day';"""
+        )
+        nextWeek.append(cursor.fetchone()[0].day)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """SELECT now()+'3 day';"""
+        )
+        nextWeek.append(cursor.fetchone()[0].day)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """SELECT now()+'4 day';"""
+        )
+        nextWeek.append(cursor.fetchone()[0].day)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """SELECT now()+'5 day';"""
+        )
+        nextWeek.append(cursor.fetchone()[0].day)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """SELECT now()+'6 day';"""
+        )
+        nextWeek.append(cursor.fetchone()[0].day)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """SELECT now()+'7 day';"""
+        )
+        nextWeek.append(cursor.fetchone()[0].day)
+    return nextWeek
+
+
+
 
 def setLastMessage(user_id, message):
     connection = psycopg2.connect(
@@ -217,9 +281,9 @@ def getDow():
     connection.autocommit = True
     with connection.cursor() as cursor:
         cursor.execute(
-            """SELECT EXTRACT (DOW FROM NOW());"""
+            """SELECT EXTRACT(dow FROM now()), date_part('dow', now()), now()::date;"""
         )
-        return (cursor.fetchone()[0]+7)%8
+        return cursor.fetchone()[0]
 
 
 def getNow():

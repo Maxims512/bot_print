@@ -1,11 +1,11 @@
 import messageHandlerKeyboard
-import messageHandlerText
+import messageHandler
 import db
+import realDb
 
 
 def addUser(id):
-    dab = db.db()
-    dab.addPerson(id)
+    realDb.addPerson(id)
 
 class FullMessage:
     __userId = None
@@ -35,14 +35,12 @@ class FullMessage:
 
 
     def __init__(self, msgObject):
-        dab = db.db()
         userId = msgObject.message['from_id']
         chatId = msgObject.message['peer_id']
-        print(chatId)
         if (chatId == 2000000001):
-            dab.addPerson(msgObject.message['from_id'])
+            realDb.addPerson(msgObject.message['from_id'])
 
-        if not(dab.verifyPerson(msgObject.message['from_id'])):
+        if not(realDb.verifyPerson(msgObject.message['from_id'])):
 
             self.setUserId(userId)
             self.setAnswer("Чтобы начать пользоваться ботом напишите любое сообщение в беседу общежития")
@@ -51,18 +49,20 @@ class FullMessage:
 
         else:
 
-
+            photo = ""
             if (len(msgObject.message['attachments'])) > 0:
                  photo = msgObject.message['attachments'][0]['photo']['sizes'][3]['url']
 
             if (photo != ""):
                 self.setPhoto(photo)
-            lastMessage = dab.getLastMessage(userId)
+
+
             userText = msgObject.message['text'].lower()
             self.setUserId(userId)
-            self.setAnswer(messageHandlerText.answer(userText, lastMessage, self))
-            self.setKeyboard(messageHandlerKeyboard.mainProcessor(userText))
-            dab.setLastMessage(userId, userText)
+            lastMessage = realDb.getLastMessage(userId)
+
+            messageHandler.getAnswer(userText, lastMessage, self)
+            realDb.setLastMessage(userId, userText)
 
 
 

@@ -1,7 +1,7 @@
 import vk_api, random
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 import FullMessage
-import db
+import realDb
 from config import token
 from config import admin_id
 
@@ -19,6 +19,7 @@ class MyLongPoll(VkBotLongPoll):
 class VkBot:
 
     def __init__(self):
+        realDb.initDb()
         self.vk_session = vk_api.VkApi(token=token)
         self.longpoll = MyLongPoll(self.vk_session, admin_id)
 
@@ -37,23 +38,8 @@ class VkBot:
 
             if (event.type == VkBotEventType.MESSAGE_NEW and event.object.message['peer_id'] == 2000000001):
                  FullMessage.addUser(event.object.message['from_id'])
-            #     answer = FullMessage.FullMessage(event.object)
-            #     self.vk_session.method('messages.send', {
-            #         'user_id': answer.getUserId(),
-            #         'message': answer.getText(),
-            #         "random_id": random.random(),
-            #         "attachment": answer.getKeyboard()
-            #     })
 
             if event.type == VkBotEventType.MESSAGE_NEW and event.object.message['id'] != 0:
-                dab = db.db()
-                print(dab.getLastMessage(event.object.message['from_id']))
                 answer = FullMessage.FullMessage(event.object)
-                self.vk_session.method('messages.send', {
-                    'user_id': answer.getUserId(),
-                    'message': answer.getText(),
-                    "random_id": random.random(),
-                    "attachment" : answer.getKeyboard(),
-                    "keyboard" : answer.getKeyboard()
-                })
+                VkBot.send_message(self, answer.getUserId(), answer.getText(), answer.getKeyboard(), answer.getPhoto())
 
