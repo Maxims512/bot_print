@@ -3,11 +3,24 @@ import createKeyboard
 
 
 def getAnswer(message, lastMessage, fullMessage):
+    print(message)
     text = getStartText()
     keyboard = getStartKeyboard()
-    if message.lower() == "стирка":
-        freeWashingDay = realDb.getFreeWashingDay()
+    if message.lower() == "записаться на стирку":
 
+        if (realDb.getCountWashFromPerson(fullMessage.getUserId()) == 2):
+            fullMessage.setAnswer("Вы уже записаны на 2 стирки")
+            fullMessage.setKeyboard(getStartKeyboard())
+        if len(realDb.getFreeWashingDay()) > 0:
+            keyboard = getWashingDayKeyboard()
+            text = "Выберите день"
+        else:
+            keyboard = getStartKeyboard()
+            text = "На ближайшую неделю все стиральные машинки заняты"
+
+
+    if (lastMessage == "Записаться на стирку" and message in ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"]):
+        text = "Выберите время"
 
 
 
@@ -18,18 +31,17 @@ def getAnswer(message, lastMessage, fullMessage):
 
 
 def getWashingDayKeyboard():
-    todayDayWeek = realDb.getDow()
-    freeWashingDay = realDb.getFreeWashingDay()
-    title = []
-    days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"]
+    title = realDb.getFreeWashingDay()
+    keyboard = createKeyboard.createKeyboard(1,len(title), title)
+    return keyboard
 
 
 
 
 
 def getStartKeyboard():
-    title = ["Стирка", "Товары", "Мероприятия"]
-    keyboard = createKeyboard.createKeyboard(1,3, title)
+    title = ["Записаться на стирку","Посмотреть расписание стирок", "Товары", "Мероприятия"]
+    keyboard = createKeyboard.createKeyboard(1,4, title)
 
     return keyboard
 
@@ -45,4 +57,4 @@ def getEmpty():
 
 
 def getStartText():
-    return "Я вас не понял"
+    return "Я вас не понимаю"

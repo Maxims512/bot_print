@@ -4,8 +4,8 @@ import db
 import realDb
 
 
-def addUser(id):
-    realDb.addPerson(id)
+def addUser(id, name):
+    realDb.addPerson(id, name)
 
 class FullMessage:
     __userId = None
@@ -38,9 +38,17 @@ class FullMessage:
         userId = msgObject.message['from_id']
         chatId = msgObject.message['peer_id']
         if (chatId == 2000000001):
-            realDb.addPerson(msgObject.message['from_id'])
+            name = (self.vk_session.method('users.get', {'user_id': userId})[0]['first_name']
+                    +self.vk_session.method('users.get', {'user_id': userId})[0]['second_name'])
+            if (not realDb.verifyPerson(userId)):
+                self.setUserId(userId)
+                self.setAnswer("Вы прошли верификацию")
+                self.setKeyboard(messageHandler.getStartKeyboard())
+            realDb.addPerson(msgObject.message['from_id'], name)
 
-        if not(realDb.verifyPerson(msgObject.message['from_id'])):
+
+        #чтобы все работало добавь тут not
+        if not (realDb.verifyPerson(msgObject.message['from_id'])):
 
             self.setUserId(userId)
             self.setAnswer("Чтобы начать пользоваться ботом напишите любое сообщение в беседу общежития")

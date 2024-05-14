@@ -3,6 +3,7 @@ import datetime
 import realDb
 
 realDb.initDb()
+realDb.addPerson(111, "sdf")
 
-date = datetime.datetime.now()
-print(realDb.getDow())
+
+print(realDb.verifyPerson(111))

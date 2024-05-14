@@ -37,7 +37,11 @@ class VkBot:
         for event in self.longpoll.listen():
 
             if (event.type == VkBotEventType.MESSAGE_NEW and event.object.message['peer_id'] == 2000000001):
-                 FullMessage.addUser(event.object.message['from_id'])
+                user_id = event.object.message['from_id']
+                name = (self.vk_session.method('users.get', {'user_id': user_id})[0]['first_name'] +
+                        "_"+self.vk_session.method('users.get', {'user_id': user_id})[0]['last_name'])
+                realDb.addPerson(user_id, name)
+
 
             if event.type == VkBotEventType.MESSAGE_NEW and event.object.message['id'] != 0:
                 answer = FullMessage.FullMessage(event.object)
