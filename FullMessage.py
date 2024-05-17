@@ -1,7 +1,6 @@
-import messageHandlerKeyboard
+
 import messageHandler
-import db
-import realDb
+from dateBase import realDb
 
 
 def addUser(id, name):
@@ -37,14 +36,15 @@ class FullMessage:
     def __init__(self, msgObject):
         userId = msgObject.message['from_id']
         chatId = msgObject.message['peer_id']
+        #это потом удали
+        realDb.addPerson(userId, "")
         if (chatId == 2000000001):
-            name = (self.vk_session.method('users.get', {'user_id': userId})[0]['first_name']
-                    +self.vk_session.method('users.get', {'user_id': userId})[0]['second_name'])
+
             if (not realDb.verifyPerson(userId)):
                 self.setUserId(userId)
                 self.setAnswer("Вы прошли верификацию")
                 self.setKeyboard(messageHandler.getStartKeyboard())
-            realDb.addPerson(msgObject.message['from_id'], name)
+
 
 
         #чтобы все работало добавь тут not
@@ -52,11 +52,10 @@ class FullMessage:
 
             self.setUserId(userId)
             self.setAnswer("Чтобы начать пользоваться ботом напишите любое сообщение в беседу общежития")
-            self.setKeyboard(messageHandlerKeyboard.getEmpty())
+            self.setKeyboard(messageHandler.getEmpty())
 
 
         else:
-
             photo = ""
             if (len(msgObject.message['attachments'])) > 0:
                  photo = msgObject.message['attachments'][0]['photo']['sizes'][3]['url']

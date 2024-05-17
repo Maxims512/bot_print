@@ -1,9 +1,9 @@
 import vk_api, random
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 import FullMessage
-import realDb
-from config import token
-from config import admin_id
+from dateBase import realDb
+from configs.VKconfig import token
+from configs.VKconfig import admin_id
 
 
 class MyLongPoll(VkBotLongPoll):
@@ -36,14 +36,24 @@ class VkBot:
     def run(self):
         for event in self.longpoll.listen():
 
+
             if (event.type == VkBotEventType.MESSAGE_NEW and event.object.message['peer_id'] == 2000000001):
                 user_id = event.object.message['from_id']
                 name = (self.vk_session.method('users.get', {'user_id': user_id})[0]['first_name'] +
                         "_"+self.vk_session.method('users.get', {'user_id': user_id})[0]['last_name'])
+                print(name)
                 realDb.addPerson(user_id, name)
 
 
             if event.type == VkBotEventType.MESSAGE_NEW and event.object.message['id'] != 0:
+
+
+
                 answer = FullMessage.FullMessage(event.object)
                 VkBot.send_message(self, answer.getUserId(), answer.getText(), answer.getKeyboard(), answer.getPhoto())
-
+                ######################
+                user_id = event.object.message['from_id']
+                name = (self.vk_session.method('users.get', {'user_id': user_id})[0]['first_name'] +
+                        "_" + self.vk_session.method('users.get', {'user_id': user_id})[0]['last_name'])
+                print(name)
+                realDb.addPerson(user_id, name)
