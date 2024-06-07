@@ -2,7 +2,7 @@ from fpdf import FPDF
 
 
 class PDF(FPDF):
-    def create_table(self, table_data, title='', data_size=10, title_size=10, align_data='L', align_header='L',
+    def create_table(self, table_data, title='', data_size=8, title_size=10, align_data='L', align_header='L',
                      cell_width='even', x_start='x_default', emphasize_data=[], emphasize_style=None,
                      emphasize_color=(0, 0, 0)):
         """

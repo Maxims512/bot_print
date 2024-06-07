@@ -2,11 +2,14 @@ import datetime
 
 import realDb
 
-date = datetime.datetime(2024, 5, 15, 14)
-date2 = datetime.datetime(2024, 5, 15, 15)
 
-print(realDb.getNextWeek())
+realDb.initDb()
+
+realDb.addProduct(111, "пирог1", 100, "вкусный", "http")
+realDb.addProduct(111, "пирог2", 200, "вкусный", "http")
+realDb.addProduct(111, "пирог3", 40, "вкусный", "http")
+realDb.addPerson(111, "max")
 
 
 
-print(realDb.getNextWeekDateTime())
+

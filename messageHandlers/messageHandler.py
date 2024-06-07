@@ -1,14 +1,15 @@
 import datetime
 
+import createPDF.table_class
 from dateBase import realDb
-import createKeyboard
-
+from messageHandlers import createKeyboard
 
 def getAnswer(message, lastMessage, fullMessage):
     text = getStartText()
     keyboard = getStartKeyboard()
     user_id = fullMessage.getUserId()
     if message == "стирка":
+
         keyboard = getStartWashingKeyboard()
         text = "Выберите дальнейшее действие"
 
@@ -25,8 +26,6 @@ def getAnswer(message, lastMessage, fullMessage):
             keyboard = getStartKeyboard()
             text = "На ближайшую неделю все стиральные машинки заняты"
 
-
-  
     if (lastMessage == "записаться на стирку" and message.split(" ")[0] in ["понедельник", "вторник", "среда", "четверг", "пятница"]):
         date = message.split(" ")[1]
         day = date.split("_")[0]
@@ -46,12 +45,15 @@ def getAnswer(message, lastMessage, fullMessage):
             realDb.addWashing(user_id, date)
             text = f"Вы записались на стирку {lastMessage}, в {hour} часов"
             keyboard = getStartKeyboard()
+            createPDF.table_class.createPdfFile(0)
         else:
             text = "К сожалению это время занято"
             keyboard = getStartKeyboard()
 
     if message == "посмотреть расписание стирок":
-        text = "Тут будет пдф файл с расписанием на неделею"
+
+        createPDF.table_class.createPdfFile(0)
+        text = "Расписание стирок на ближайшую неделю:"
 
 
     if message == "отменить стирку":
@@ -61,15 +63,22 @@ def getAnswer(message, lastMessage, fullMessage):
         else:
             text = "У вас нет активных стирок"
 
-    if (lastMessage == "отменить стирку" and message.split(" ")[1].split(":")[0] in ["11", "12", "13", "14", "15"]):
+    if (lastMessage == "отменить стирку" and message.count(" ") > -1 and len(message.split(" ")) > 1 and
+            message.split(" ")[1].split(":")[0] in ["11", "12", "13", "14", "15"]):
         text = f"Вы отменили стирку {message}"
+
+        print(message)
+        year = int(message.split(" ")[0].split('-')[0])
+        month = int(message.split(" ")[0].split('-')[1])
+        day = int(message.split(" ")[0].split('-')[2])
+        hour = int(message.split(" ")[1].split(':')[0])
+        date = datetime.datetime(year, month, day, hour)
+        realDb.deleteWashing(user_id, date)
+        createPDF.table_class.createPdfFile(0)
 
 
     fullMessage.setAnswer(text)
     fullMessage.setKeyboard(keyboard)
-
-
-
 
 
 def getWashingsFromUserKeyboard(user_id):
@@ -79,16 +88,13 @@ def getWashingsFromUserKeyboard(user_id):
     keyboard = createKeyboard.createKeyboard(1, len(title), title)
     return keyboard
 
-
 def getWashingDayKeyboard():
     title = realDb.getFreeWashingDay()
     if len(title)>0:
-        keyboard = createKeyboard.createKeyboard(1,len(title), title)
+        keyboard = createKeyboard.createKeyboard(1, len(title), title)
         return keyboard
     else:
         return getStartWashingKeyboard()
-
-
 
 def getFreeWashingTimeKeyboard(day):
     title = []
@@ -109,23 +115,16 @@ def getStartWashingKeyboard():
 
     return keyboard
 
-
 def getStartKeyboard():
     title = ["Стирка", "Товары", "Мероприятия"]
-    keyboard = createKeyboard.createKeyboard(1,4, title)
+    keyboard = createKeyboard.createKeyboard(1, 4, title)
 
     return keyboard
-
 
 def getEmpty():
     title = []
-    keyboard = createKeyboard.createKeyboard(0,0,title)
+    keyboard = createKeyboard.createKeyboard(0, 0, title)
     return keyboard
-
-
-
-
-
 
 def getStartText():
     return "Я вас не понимаю"

@@ -1,5 +1,4 @@
-
-import messageHandler
+from messageHandlers import messageHandler
 from dateBase import realDb
 
 
@@ -30,8 +29,6 @@ class FullMessage:
         return self.__keyboard
     def getPhoto(self):
         return self.__photo
-
-
 
     def __init__(self, msgObject):
         userId = msgObject.message['from_id']

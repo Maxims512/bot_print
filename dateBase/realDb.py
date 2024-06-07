@@ -6,18 +6,35 @@ from configs.dbConfig import host, user, password, db_name
 def initDb():
     req1 = """DROP TABLE users;"""
     req2 = """DROP TABLE washingTime;"""
-    req3 = """CREATE TABLE users(
+    req3 = "DROP TABLE products;"
+    req4 = """CREATE TABLE users(
                 user_id varchar(50) NOT NULL PRIMARY KEY,
                 full_name varchar(50),
                 last_message varchar(100));"""
 
-    req4 = """CREATE TABLE washingTime(
+    req5 = """CREATE TABLE washingTime(
                 user_id varchar(50) NOT NULL,
                 date timestamp NOT NUll);"""
+
+
+    req6 = """CREATE TABLE products(
+                product_id SERIAL PRIMARY KEY,
+                user_id varchar(50) NOT NULL,
+                title varchar(50) NOT NULL,
+                price integer NOT NULL,
+                date_of_creation timestamp NOT NUll,
+                description varchar(200),
+                link_of_photo varchar(200));"""
+
+
+
     request(req1)
     request(req2)
     request(req3)
     request(req4)
+    request(req5)
+    request(req6)
+
 
 def request(req):
     ret = []
@@ -94,7 +111,7 @@ def getFreeWashingDay():
     k = 0
     days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"]
     for day in getNextWeek():
-        if (len(getFreeWashingTime(day))>0 and k != sat and k != sun):
+        if (len(getFreeWashingTime(day))>0 and k != sat and k != sun and k < 6):
             freeWashingDay.append(days[int((dow%7)%5)-1]+" "+day)
         k += 1
         dow+=1
@@ -114,10 +131,12 @@ def getFullNextWeek():
     k = 0
     days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"]
     for day in getNextWeek():
-        if (k != sat and k != sun):
+
+        if (k != sat and k != sun and k < 6):
             DaysWeek.append(days[int((dow % 7) % 5) - 1] + " " + day)
         k += 1
         dow += 1
+
     return DaysWeek
 
 def getCountWashFromTime(dateTime):
@@ -155,6 +174,10 @@ def getNextWeekDateTime():
     return nextWeek
 
 
+def deleteWashing(user_id, dateTime):
+    if getCountWashFromPerson(user_id) > 0:
+        req = f"DELETE from washingTime WHERE user_id = '{user_id}' and date = '{dateTime}'"
+        request(req)
 
 def setLastMessage(user_id, message):
     if (not verifyPerson(user_id)):
@@ -175,7 +198,6 @@ def getDay():
     req = """SELECT NOW();"""
     return request(req)[0][0].day
 
-
 def getMonth():
     req = """SELECT NOW();"""
     return request(req)[0][0].month
@@ -193,4 +215,14 @@ def getDow():
 def getNow():
     req =   """SELECT NOW();"""
     return request(req)
+
+def getProductDescriptionProductId(product_id):
+    req = f"SELECT description FROM products WHERE product_id = '{product_id}';"
+    return request(req)
+
+def addProduct(user_id, title, price, description="", link_photo=""):
+    today = getNow()[0][0]
+    req = f"""INSERT INTO products (user_id, title, price, date_of_creation, description, link_of_photo) 
+           values ('{user_id}', '{title}', '{price}', '{today}', '{description}', '{link_photo}');"""
+    request(req)
 
