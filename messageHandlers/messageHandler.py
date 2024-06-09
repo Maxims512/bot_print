@@ -97,7 +97,7 @@ def getAnswer(message, lastMessage, fullMessage):
             keyboard = getStartProductKeyboard()
 
     if (message.split(":")[0] == "добавить цену" and realDb.haveProductId(message.split(":")[1])):
-        text = f"Введите цену товара"
+        text = "Введите цену товара (только число)"
         keyboard = getEmptyKeyboard()
 
     if (lastMessage != None and lastMessage.split(":")[0] == "добавить цену" and message.isnumeric()
@@ -106,22 +106,55 @@ def getAnswer(message, lastMessage, fullMessage):
         print(product_id)
         realDb.addProductPrice(product_id, int(message))
         keyboard = addProductPhotoKeyboard(product_id)
+        text = "Выберите следующее действие"
 
     if (message.split(":")[0] == "добавить фото" and realDb.haveProductId(message.split(":")[1])):
         text = "Отправьте фото товара"
         keyboard = getEmptyKeyboard()
 
-    #Сделать прием фото и добавление в дб и проверь что все добавляеться
+    if (lastMessage != None and lastMessage.split(":")[0] == "добавить фото"
+            and realDb.haveProductId(lastMessage.split(":")[1])):
+        product_id = lastMessage.split(":")[1]
+        keyboard = addProductDescriptionKeyboard(product_id)
+        text = f"Вы добавили фото товару {realDb.getProductName(product_id)}"
+
+    if message.split(":")[0] == "оставить товар без фото" and realDb.haveProductId(message.split(":")[1]):
+        product_id = message.split(":")[1]
+        keyboard = addProductDescriptionKeyboard(product_id)
+        text = "Выберите дальнейшее действие"
+
+    if message.split(":")[0] == "добавить описание" and realDb.haveProductId(message.split(":")[1]):
+        text = "Введите описание товара (не более 100 символов)"
+        keyboard = getEmptyKeyboard()
+
+    if (lastMessage != None and lastMessage.split(":")[0] == "добавить описание"
+            and realDb.haveProductId(lastMessage.split(":")[1]) and len(message) <= 100):
+        product_id = lastMessage.split(":")[1]
+        realDb.addProductDescription(product_id, message)
+        text = f"Вы добавили описание товару {realDb.getProductName(product_id)}"
+        keyboard = getStartKeyboard()
+
+    if message.split(":")[0] == "оставить товар без описания" and realDb.haveProductId(message.split(":")[1]):
+        product_id = message.split(":")[1]
+        text = f"Вы оставили товар {realDb.getProductName(product_id)} без описания"
+        keyboard = getStartKeyboard()
 
 
 
     fullMessage.setAnswer(text)
     fullMessage.setKeyboard(keyboard)
 
+def addProductDescriptionKeyboard(product_id):
+    title = []
+    title.append(f"Добавить описание: {product_id}")
+    title.append(f"Оставить товар без описания:{product_id}")
+    keyboard = createKeyboard.createKeyboard(1,2, title)
+    return keyboard
+
 def addProductPhotoKeyboard(product_id):
     title = []
     title.append(f"Добавить фото: {product_id}")
-    title.append("Оставить продукт без фото")
+    title.append(f"Оставить товар без фото:{product_id}")
     keyboard = createKeyboard.createKeyboard(1,2, title)
     return keyboard
 

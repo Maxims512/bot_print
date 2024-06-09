@@ -61,6 +61,9 @@ class VkBot:
 
                 obj = event.object.message
                 peer = obj['peer_id']
+
+
+
                 if (event.type == VkBotEventType.MESSAGE_NEW and event.object.message['id'] != 0 and
                         event.object.message['text'].lower() == "посмотреть расписание стирок" and realDb.verifyPerson(peer)):
 

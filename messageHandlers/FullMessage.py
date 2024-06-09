@@ -46,19 +46,24 @@ class FullMessage:
 
         #чтобы все работало добавь тут not
         if not (realDb.verifyPerson(msgObject.message['from_id'])):
-
             self.setUserId(userId)
             self.setAnswer("Чтобы начать пользоваться ботом напишите любое сообщение в беседу общежития")
             self.setKeyboard(messageHandler.getEmpty())
 
 
         else:
-            photo = ""
-            if (len(msgObject.message['attachments'])) > 0:
-                 photo = msgObject.message['attachments'][0]['photo']['sizes'][3]['url']
 
-            if (photo != ""):
-                self.setPhoto(photo)
+            if realDb.getLastMessage(userId) != None and realDb.getLastMessage(userId).split(":")[0] == "добавить фото" \
+                and realDb.haveProductId(realDb.getLastMessage(userId).split(":")[1]):
+                photo = ""
+                if (len(msgObject.message['attachments'])) > 0:
+                    photo = msgObject.message['attachments'][0]['photo']['sizes'][3]['url']
+                    print(photo)
+                    product_id = realDb.getLastMessage(userId).split(":")[1]
+                    realDb.addProductPhoto(product_id, photo)
+
+                if (photo != ""):
+                    self.setPhoto(photo)
 
 
             userText = msgObject.message['text'].lower()

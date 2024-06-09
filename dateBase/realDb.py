@@ -23,8 +23,8 @@ def initDb():
                 title varchar(50) NOT NULL,
                 price integer NOT NULL,
                 date_of_creation timestamp NOT NUll,
-                description varchar(200),
-                link_of_photo varchar(200));"""
+                description varchar(100),
+                link_of_photo varchar(500));"""
 
 
 
@@ -249,6 +249,20 @@ def addProductPrice(product_id, price):
     req = f"UPDATE products SET price = '{price}' WHERE product_id = '{product_id}';"
     request(req)
 
+def addProductPhoto(product_id, photo):
+    req = f"UPDATE products SET link_of_photo = '{photo}' WHERE product_id = '{product_id}';"
+    request(req)
+
+def getProductPhoto(product_id):
+    req = f"SELECT link_of_photo FROM products WHERE product_id = '{product_id}';"
+    return request(req)[0][0]
+
+def getProductDescription(product_id):
+    req = f"SELECT description FROM products WHERE product_id = '{product_id}';"
+    request(req)
+def addProductDescription(product_id, description):
+    req = f"UPDATE products SET description = '{description}' WHERE product_id = '{product_id}';"
+    request(req)
 def getProductName(product_id):
     req = f"SELECT title FROM products WHERE product_id = '{product_id}';"
     return request(req)[0][0]
