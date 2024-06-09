@@ -19,52 +19,54 @@ def createPdfFile(title):
     dow = realDb.getDow()
 
 
-
+    print(day)
     pdf.create_table(table_data = getSheludeFromDay(day),title=nextWeek[k], cell_width='36', x_start=30)
     dow+=1
     if (dow == 5):
         dow = 0
-        day+=3
+        day+=2
     if (dow == 6):
         dow = 0
-        day += 2
+        day += 1
     day+=1
     k+=1
-
+    print(day)
     pdf.create_table(table_data = getSheludeFromDay(day), title=nextWeek[k], cell_width='36', x_start=30)
     dow += 1
     if (dow == 5):
         dow = 0
-        day += 3
+        day += 2
     if (dow == 6):
         dow = 0
-        day += 2
+        day += 1
     day += 1
     k+=1
 
-
+    print(day)
     pdf.create_table(table_data = getSheludeFromDay(day),title=nextWeek[k], cell_width='36', x_start=30)
     dow += 1
     if (dow == 5):
         dow = 0
-        day += 3
+        day += 2
     if (dow == 6):
         dow = 0
-        day += 2
+        day += 1
     day += 1
     k+=1
 
+    print(day)
     pdf.create_table(table_data = getSheludeFromDay(day), title=nextWeek[k], cell_width='36', x_start=30)
     dow += 1
     if (dow == 5):
         dow = 0
-        day += 3
+        day += 2
     if (dow == 6):
         dow = 0
-        day += 2
+        day += 1
     day += 1
     k+=1
 
+    print(day)
     pdf.create_table(table_data = getSheludeFromDay(day),title=nextWeek[k], cell_width='36', x_start=30)
 
 

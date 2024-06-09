@@ -1,5 +1,5 @@
 import datetime
-
+import product
 import psycopg2
 from configs.dbConfig import host, user, password, db_name
 
@@ -233,13 +233,17 @@ def addProduct(user_id, title, price=-1, description="", link_photo=""):
            values ('{user_id}', '{title}', '{price}', '{today}', '{description}', '{link_photo}');"""
     request(req)
 
-
-def haveProductId(product_id):
+def haveProductIdWithoutPrice(product_id):
     req = f"SELECT * FROM products WHERE product_id = '{product_id}';"
     return len(request(req)) > 0
+def haveProductId(product_id):
+    req = f"SELECT price FROM products WHERE product_id = '{product_id}';"
+    ans = request(req)
+    return len(ans) > 0 and int(ans[0][0]) >-1
 def haveProductName(name):
-    req = f"SELECT * FROM products WHERE title = '{name}';"
-    return len(request(req))>0
+    req = f"SELECT price FROM products WHERE title = '{name}';"
+    ans = request(req)
+    return len(ans) > 0 and int(ans[0][0]) > -1
 
 def getProductId(name):
     req = f"SELECT product_id FROM products WHERE title = '{name}';"
@@ -269,3 +273,38 @@ def getProductName(product_id):
 def getProductPrice(product_id):
     req = f"SELECT price FROM products WHERE product_id = '{product_id}';"
     return request(req)[0][0]
+
+def getUserIdByProduct(product_id):
+    req = f"SELECT user_id FROM products WHERE product_id = '{product_id}';"
+    return request(req)[0][0]
+def getProductIdByUser(user_id):
+    req = f"SELECT product_id FROM products WHERE user_id = '{user_id}';"
+    answer = []
+    for i in request(req):
+        answer.append(int(i[0]))
+    return answer
+
+def getProduct(product_id):
+    req = (f"SELECT "
+           f"user_id, title, price, date_of_creation, description, link_of_photo FROM products "
+           f"WHERE product_id = '{product_id}';")
+
+    mass = request(req)[0]
+    product1 = product.Product(product_id, mass[0], mass[1], mass[2], mass[3], mass[4], mass[5])
+    return product1
+
+
+def getAllProductsId():
+    req = "SELECT product_id FROM products"
+    answer = []
+    for i in request(req):
+        answer.append(i[0])
+    return answer
+
+def productHandler():
+    req = "DELETE FROM products WHERE price = -1;"
+    request(req)
+
+def deleteProduct(product_id):
+    req = f"DELETE FROM products WHERE product_id = '{product_id}';"
+    request(req)

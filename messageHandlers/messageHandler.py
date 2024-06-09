@@ -83,10 +83,16 @@ def getAnswer(message, lastMessage, fullMessage):
         keyboard = getStartProductKeyboard()
 
     if (lastMessage == "товары" and message == "выставить товар на продажу"):
-        text = "Введите название товара (не более 50 символов)"
-        keyboard = getEmptyKeyboard()
+        realDb.productHandler()
+        if (len(realDb.getProductIdByUser(user_id))==10):
+            text = "У вас уже есть 10 активных товаров"
+            keyboard = getStartProductKeyboard()
+        else:
+            text = "Введите название товара (не более 50 символов)"
+            keyboard = getEmptyKeyboard()
 
-    if (lastMessage == "выставить товар на продажу" and len(message) < 50):
+    if (lastMessage == "выставить товар на продажу" and len(message) < 50 and message not in["мероприятия", "товары",
+        "посмотреть все товары", "удалить товар с продажи"]):
         if (not realDb.haveProductName(message)):
             realDb.addProduct(user_id, message)
             product_id = realDb.getProductId(message)
@@ -96,12 +102,12 @@ def getAnswer(message, lastMessage, fullMessage):
             text = "Такой товар уже есть, введите другое название"
             keyboard = getStartProductKeyboard()
 
-    if (message.split(":")[0] == "добавить цену" and realDb.haveProductId(message.split(":")[1])):
+    if (message.split(":")[0] == "добавить цену" and realDb.haveProductIdWithoutPrice(message.split(":")[1])):
         text = "Введите цену товара (только число)"
         keyboard = getEmptyKeyboard()
 
     if (lastMessage != None and lastMessage.split(":")[0] == "добавить цену" and message.isnumeric()
-            and int(message)<1000000 and realDb.haveProductId(lastMessage.split(":")[1])):
+            and int(message)<1000000 and realDb.haveProductIdWithoutPrice(lastMessage.split(":")[1])):
         product_id = lastMessage.split(":")[1]
         print(product_id)
         realDb.addProductPrice(product_id, int(message))
@@ -138,6 +144,40 @@ def getAnswer(message, lastMessage, fullMessage):
         product_id = message.split(":")[1]
         text = f"Вы оставили товар {realDb.getProductName(product_id)} без описания"
         keyboard = getStartKeyboard()
+
+    if (lastMessage == "товары" and message == "посмотреть все товары"):
+        str1 = ""
+        for i in realDb.getAllProductsId():
+            prod = realDb.getProduct(i)
+            if (prod.getPrice() > -1):
+                str1+=prod.toString()
+
+        if str1 == "":
+            text = "Сейчас нет активных товаров"
+        else:
+            text = str1
+        keyboard = getStartProductKeyboard()
+
+    if message == "удалить товар с продажи":
+        products_id = realDb.getProductIdByUser(user_id)
+        if len(products_id)==0:
+            text = "У вас нет активных товаров"
+        else:
+            str1 = ""
+            for i in products_id:
+                str1 += realDb.getProduct(i).toStringMini()
+            str1+="Введите ID товара, который вы хотите удалить"
+            keyboard = getEmptyKeyboard()
+            text = str1
+
+    if lastMessage == "удалить товар с продажи" and message.isnumeric():
+        if int(message) in realDb.getProductIdByUser(user_id):
+            text = f"Вы удалили товар {realDb.getProductName(message)}"
+            realDb.deleteProduct(message)
+            keyboard = getStartKeyboard()
+        else:
+            text = "Это не ваш товар"
+            keyboard = getStartProductKeyboard()
 
 
 

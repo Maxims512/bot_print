@@ -1,5 +1,5 @@
 import datetime
-
+import product
 import realDb
 
 
@@ -8,12 +8,10 @@ realDb.initDb()
 
 
 
-realDb.addProduct(111, "uuuu")
-id = realDb.getProductId("uuuu")
-print(realDb.getProductPrice(id))
+realDb.addProduct(111, "ttt", 10)
+id = realDb.getProductId("ttt")
+print(realDb.getProductName(id))
+print(realDb.getProductIdByUser(111))
 
-realDb.addProductPrice(id, 1000)
-
-print(realDb.getProductPrice(id))
 
 
