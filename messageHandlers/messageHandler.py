@@ -8,6 +8,7 @@ def getAnswer(message, lastMessage, fullMessage):
     text = getStartText()
     keyboard = getStartKeyboard()
     user_id = fullMessage.getUserId()
+    print(lastMessage)
     if message == "стирка":
 
         keyboard = getStartWashingKeyboard()
@@ -66,8 +67,6 @@ def getAnswer(message, lastMessage, fullMessage):
     if (lastMessage == "отменить стирку" and message.count(" ") > -1 and len(message.split(" ")) > 1 and
             message.split(" ")[1].split(":")[0] in ["11", "12", "13", "14", "15"]):
         text = f"Вы отменили стирку {message}"
-
-        print(message)
         year = int(message.split(" ")[0].split('-')[0])
         month = int(message.split(" ")[0].split('-')[1])
         day = int(message.split(" ")[0].split('-')[2])
@@ -77,9 +76,66 @@ def getAnswer(message, lastMessage, fullMessage):
         createPDF.table_class.createPdfFile(0)
 
 
+
+
+    if (message == "товары"):
+        text = "Выберите дальнейшее действие"
+        keyboard = getStartProductKeyboard()
+
+    if (lastMessage == "товары" and message == "выставить товар на продажу"):
+        text = "Введите название товара (не более 50 символов)"
+        keyboard = getEmptyKeyboard()
+
+    if (lastMessage == "выставить товар на продажу" and len(message) < 50):
+        if (not realDb.haveProductName(message)):
+            realDb.addProduct(user_id, message)
+            product_id = realDb.getProductId(message)
+            keyboard = createCreateKeyboardTitle(f"Добавить цену:{product_id}")
+            text = "Нажмите 'Добавить цену'"
+        else:
+            text = "Такой товар уже есть, введите другое название"
+            keyboard = getStartProductKeyboard()
+
+    if (message.split(":")[0] == "добавить цену" and realDb.haveProductId(message.split(":")[1])):
+        text = f"Введите цену товара"
+        keyboard = getEmptyKeyboard()
+
+    if (lastMessage != None and lastMessage.split(":")[0] == "добавить цену" and message.isnumeric()
+            and int(message)<1000000 and realDb.haveProductId(lastMessage.split(":")[1])):
+        product_id = lastMessage.split(":")[1]
+        print(product_id)
+        realDb.addProductPrice(product_id, int(message))
+        keyboard = addProductPhotoKeyboard(product_id)
+
+    if (message.split(":")[0] == "добавить фото" and realDb.haveProductId(message.split(":")[1])):
+        text = "Отправьте фото товара"
+        keyboard = getEmptyKeyboard()
+
+    #Сделать прием фото и добавление в дб и проверь что все добавляеться
+
+
+
     fullMessage.setAnswer(text)
     fullMessage.setKeyboard(keyboard)
 
+def addProductPhotoKeyboard(product_id):
+    title = []
+    title.append(f"Добавить фото: {product_id}")
+    title.append("Оставить продукт без фото")
+    keyboard = createKeyboard.createKeyboard(1,2, title)
+    return keyboard
+
+
+def createCreateKeyboardTitle(title):
+    titles = []
+    titles.append(title)
+    keyboard = createKeyboard.createKeyboard(1, 1, titles)
+    return keyboard
+
+def getStartProductKeyboard():
+    title = ["Посмотреть все товары", "Выставить товар на продажу", "Удалить товар с продажи"]
+    keyboard = createKeyboard.createKeyboard(1, 3, title)
+    return keyboard
 
 def getWashingsFromUserKeyboard(user_id):
     title = []
@@ -121,7 +177,7 @@ def getStartKeyboard():
 
     return keyboard
 
-def getEmpty():
+def getEmptyKeyboard():
     title = []
     keyboard = createKeyboard.createKeyboard(0, 0, title)
     return keyboard

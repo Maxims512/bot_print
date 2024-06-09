@@ -5,11 +5,15 @@ import realDb
 
 realDb.initDb()
 
-realDb.addProduct(111, "пирог1", 100, "вкусный", "http")
-realDb.addProduct(111, "пирог2", 200, "вкусный", "http")
-realDb.addProduct(111, "пирог3", 40, "вкусный", "http")
-realDb.addPerson(111, "max")
 
 
+
+realDb.addProduct(111, "uuuu")
+id = realDb.getProductId("uuuu")
+print(realDb.getProductPrice(id))
+
+realDb.addProductPrice(id, 1000)
+
+print(realDb.getProductPrice(id))
 
 

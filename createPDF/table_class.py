@@ -83,9 +83,9 @@ def getSheludeFromDay(dayPoSChetu):
 
     for hour in range(11,16):
 
-        day = int(dayNextWeek[dayPoSChetu-1].split("_")[0])
-        month = int(dayNextWeek[dayPoSChetu-1].split("_")[1])
-        year = int(dayNextWeek[dayPoSChetu-1].split("_")[2])
+        day = int(dayNextWeek[dayPoSChetu].split("_")[0])
+        month = int(dayNextWeek[dayPoSChetu].split("_")[1])
+        year = int(dayNextWeek[dayPoSChetu].split("_")[2])
         dateTime = datetime.datetime(year, month, day, hour)
         res = realDb.getWashingsFromTime(dateTime)
 

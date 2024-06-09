@@ -42,8 +42,7 @@ class VkBot:
                 user_id = event.object.message['from_id']
                 name = (self.vk_session.method('users.get', {'user_id': user_id})[0]['first_name'] +
                         "_"+self.vk_session.method('users.get', {'user_id': user_id})[0]['last_name'])
-                print(name)
-                print(user_id)
+
                 realDb.addPerson(user_id, name)
 
 
@@ -52,11 +51,10 @@ class VkBot:
                 user_id = event.object.message['from_id']
                 name = (self.vk_session.method('users.get', {'user_id': user_id})[0]['first_name'] +
                         "_" + self.vk_session.method('users.get', {'user_id': user_id})[0]['last_name'])
-                print(name)
-                print(user_id)
+
                 realDb.addPerson(user_id, name)
                 answer = FullMessage.FullMessage(event.object)
-                VkBot.send_message(self, 284531728, "COURSELINGVO гавно", answer.getKeyboard(), answer.getPhoto())
+
 
                 VkBot.send_message(self, answer.getUserId(), answer.getText(), answer.getKeyboard(), answer.getPhoto())
                 ######################

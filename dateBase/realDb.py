@@ -103,15 +103,18 @@ def getWashingTimeFromUser(user_id):
 def getFreeWashingDay():
     dow = getDow()
     freeWashingDay = []
-
+    if dow == 0:
+        dow = 7
     sat = (6 - dow)
     if sat < 0:
         sat = 7
     sun = 7 - dow
     k = 0
+    o = 0
     days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"]
     for day in getNextWeek():
-        if (len(getFreeWashingTime(day))>0 and k != sat and k != sun and k < 6):
+        if (len(getFreeWashingTime(day))>0 and k != sat and k != sun and k < 7 and o < 5):
+            o+=1
             freeWashingDay.append(days[int((dow%7)%5)-1]+" "+day)
         k += 1
         dow+=1
@@ -130,10 +133,14 @@ def getFullNextWeek():
     sun = 7 - dow
     k = 0
     days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"]
+
+    print(sat, sun)
     for day in getNextWeek():
 
-        if (k != sat and k != sun and k < 6):
+
+        if (k != sat and k != sun and k < 7):
             DaysWeek.append(days[int((dow % 7) % 5) - 1] + " " + day)
+
         k += 1
         dow += 1
 
@@ -220,9 +227,31 @@ def getProductDescriptionProductId(product_id):
     req = f"SELECT description FROM products WHERE product_id = '{product_id}';"
     return request(req)
 
-def addProduct(user_id, title, price, description="", link_photo=""):
+def addProduct(user_id, title, price=-1, description="", link_photo=""):
     today = getNow()[0][0]
     req = f"""INSERT INTO products (user_id, title, price, date_of_creation, description, link_of_photo) 
            values ('{user_id}', '{title}', '{price}', '{today}', '{description}', '{link_photo}');"""
     request(req)
 
+
+def haveProductId(product_id):
+    req = f"SELECT * FROM products WHERE product_id = '{product_id}';"
+    return len(request(req)) > 0
+def haveProductName(name):
+    req = f"SELECT * FROM products WHERE title = '{name}';"
+    return len(request(req))>0
+
+def getProductId(name):
+    req = f"SELECT product_id FROM products WHERE title = '{name}';"
+    return request(req)[0][0]
+
+def addProductPrice(product_id, price):
+    req = f"UPDATE products SET price = '{price}' WHERE product_id = '{product_id}';"
+    request(req)
+
+def getProductName(product_id):
+    req = f"SELECT title FROM products WHERE product_id = '{product_id}';"
+    return request(req)[0][0]
+def getProductPrice(product_id):
+    req = f"SELECT price FROM products WHERE product_id = '{product_id}';"
+    return request(req)[0][0]
