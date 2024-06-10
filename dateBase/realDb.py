@@ -4,20 +4,21 @@ import psycopg2
 from configs.dbConfig import host, user, password, db_name
 
 def initDb():
-    req1 = """DROP TABLE users;"""
-    req2 = """DROP TABLE washingTime;"""
+    req1 = "DROP TABLE users;"
+    req2 = "DROP TABLE washingTime;"
     req3 = "DROP TABLE products;"
-    req4 = """CREATE TABLE users(
+    req4 = "DROP TABLE events"
+    req5 = """CREATE TABLE users(
                 user_id varchar(50) NOT NULL PRIMARY KEY,
                 full_name varchar(50),
                 last_message varchar(100));"""
 
-    req5 = """CREATE TABLE washingTime(
+    req6 = """CREATE TABLE washingTime(
                 user_id varchar(50) NOT NULL,
                 date timestamp NOT NUll);"""
 
 
-    req6 = """CREATE TABLE products(
+    req7 = """CREATE TABLE products(
                 product_id SERIAL PRIMARY KEY,
                 user_id varchar(50) NOT NULL,
                 title varchar(50) NOT NULL,
@@ -25,6 +26,15 @@ def initDb():
                 date_of_creation timestamp NOT NUll,
                 description varchar(100),
                 link_of_photo varchar(500));"""
+
+    req8 = """CREATE TABLE events(
+                event_id SERIAL PRIMARY KEY,
+                creator_id varchar(50) NOT NULL,
+                title varchar(50) NOT NULL,
+                description varchar(100),
+                date_of_creation timestamp NOT NUll,
+                participant varchar(50) ARRAY);"""
+
 
 
 
@@ -34,7 +44,8 @@ def initDb():
     request(req4)
     request(req5)
     request(req6)
-
+    request(req7)
+    request(req8)
 
 def request(req):
     ret = []
@@ -270,6 +281,7 @@ def addProductDescription(product_id, description):
 def getProductName(product_id):
     req = f"SELECT title FROM products WHERE product_id = '{product_id}';"
     return request(req)[0][0]
+
 def getProductPrice(product_id):
     req = f"SELECT price FROM products WHERE product_id = '{product_id}';"
     return request(req)[0][0]
@@ -308,3 +320,41 @@ def productHandler():
 def deleteProduct(product_id):
     req = f"DELETE FROM products WHERE product_id = '{product_id}';"
     request(req)
+
+def getCountEventByUser(user_id):
+    req = f"SELECT COUNT(*) FROM events WHERE creator_id = '{user_id}';"
+    return request(req)[0][0]
+
+def addEvent(user_id, title, description = ""):
+    today = getNow()[0][0]
+    req = (f"INSERT INTO events (creator_id, title, description, date_of_creation) "
+           f"values ('{user_id}', '{title}', '{description}', '{today}');")
+    request(req)
+
+def haveEventName(title):
+    req = f"SELECT COUNT(*) FROM events WHERE title = '{title}';"
+    return request(req)[0][0]>0
+
+def haveEventId(event_id):
+    req = f"SELECT COUNT(*) FROM events WHERE event_id = '{event_id}';"
+    return request(req)[0][0] > 0
+
+def addParticipantToEvent(user_id, event_id):
+    if haveEventId(event_id):
+        req = f"UPDATE events SET participant = array_append(participant, '{user_id}') WHERE event_id = '{event_id}';"
+        request(req)
+
+def getParticipantOfEvent(event_id):
+    req = f"SELECT participant FROM events WHERE event_id = '{event_id}'"
+    return request(req)[0][0]
+
+def deleteEvent(event_id):
+    req = f"DELETE FROM events WHERE event_id = '{event_id}';"
+    request(req)
+
+def deletePartipantOfEvent(user_id, event_id):
+    req = f"UPDATE events SET participant = array_remove(participant, '{user_id}') WHERE event_id = '{event_id}';"
+    request(req)
+
+def userInEvent(user_id, event_id):
+    return str(user_id) in getParticipantOfEvent(event_id)

@@ -8,10 +8,16 @@ realDb.initDb()
 
 
 
-realDb.addProduct(111, "ttt", 10)
-id = realDb.getProductId("ttt")
-print(realDb.getProductName(id))
-print(realDb.getProductIdByUser(111))
+realDb.addEvent(111, "настолки", "")
+
+realDb.addParticipantToEvent(222, 1)
+
+print(realDb.getParticipantOfEvent(1))
+print(realDb.userInEvent(222, 1))
+
+realDb.deletePartipantOfEvent(222, 1)
+
+print(realDb.userInEvent(222, 1))
 
 
 

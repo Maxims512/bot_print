@@ -179,6 +179,18 @@ def getAnswer(message, lastMessage, fullMessage):
             text = "Это не ваш товар"
             keyboard = getStartProductKeyboard()
 
+    if message == "мероприятия":
+        keyboard = getStartEventKeyboard()
+        text = ""
+
+    if message == "создать мероприятие":
+        #тут проверка мероприятий и сделай все по плану товаров
+        if realDb.getCountEventByUser(user_id) == 5:
+            text = "У вас уже есть 5 активных мероприятий"
+            keyboard = getStartEventKeyboard()
+        else:
+
+
 
 
     fullMessage.setAnswer(text)
@@ -198,6 +210,11 @@ def addProductPhotoKeyboard(product_id):
     keyboard = createKeyboard.createKeyboard(1,2, title)
     return keyboard
 
+
+def getStartEventKeyboard():
+    title = ["Посмотреть текущие мероприятия", "Создать мероприятие", "Удалить мероприятие"]
+    keyboard = createKeyboard.createKeyboard(1, 3, title)
+    return keyboard
 
 def createCreateKeyboardTitle(title):
     titles = []
