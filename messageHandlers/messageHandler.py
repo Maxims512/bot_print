@@ -266,6 +266,30 @@ def getAnswer(message, lastMessage, fullMessage):
             keyboard = getStartEventKeyboard()
 
 
+    if message == "выйти из мероприятия":
+        events = realDb.getPartiEventByUser(user_id)
+        print(events)
+        if events == None or len(events) == 0:
+            text = "Вы не учавствуете ни в одном мероприятии"
+            keyboard = getStartKeyboard()
+        else:
+            answer = ""
+            for i in events:
+                answer+=realDb.getEvent(i).toString()
+            answer += "Введите ID мероприятия на которое вы не придете"
+            text = answer
+            keyboard = getEmptyKeyboard()
+
+    if lastMessage != None and lastMessage == "выйти из мероприятия" and message.isnumeric():
+        if int(message) not in realDb.getPartiEventByUser(user_id):
+            text = "Вы не учавствуете в этом мероприятии"
+            keyboard = getStartEventKeyboard()
+        else:
+            text = f"Вы покинули мероприятие {realDb.getEvent(message).get_title()}"
+            realDb.deletePartipantOfEvent(user_id, message)
+            keyboard = getStartKeyboard()
+
+
 
 
 
@@ -316,8 +340,8 @@ def addProductPhotoKeyboard(product_id):
 
 
 def getStartEventKeyboard():
-    title = ["Посмотреть текущие мероприятия", "Создать мероприятие", "Удалить мероприятие"]
-    keyboard = createKeyboard.createKeyboard(1, 3, title)
+    title = ["Посмотреть текущие мероприятия", "Создать мероприятие", "Удалить мероприятие", "Выйти из мероприятия"]
+    keyboard = createKeyboard.createKeyboard(1, 4, title)
     return keyboard
 
 def createCreateKeyboardTitle(title):

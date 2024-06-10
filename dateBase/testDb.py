@@ -19,7 +19,8 @@ realDb.addEventTime(2, date)
 realDb.addParticipantToEvent(222, 2)
 
 print(realDb.userInEvent(222, 2))
-print(realDb.getParticipantOfEvent(2))
+print(realDb.getPartiEventByUser(222))
+print(len(realDb.getParticipantOfEvent(3)))
 
 
 

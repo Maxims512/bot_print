@@ -400,3 +400,12 @@ def userInEvent(user_id, event_id):
         return True
     else:
         return False
+
+def getPartiEventByUser(user_id):
+    events = []
+    for i in getAllEventsId():
+        parti = getParticipantOfEvent(i)
+        if parti != None and str(user_id) in parti:
+            events.append(i)
+    return events
+
