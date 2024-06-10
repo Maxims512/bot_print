@@ -181,7 +181,7 @@ def getAnswer(message, lastMessage, fullMessage):
 
     if message == "мероприятия":
         keyboard = getStartEventKeyboard()
-        text = ""
+        text = "Выберите дальнейшее действие"
 
     if message == "создать мероприятие":
         #тут проверка мероприятий и сделай все по плану товаров
@@ -189,12 +189,116 @@ def getAnswer(message, lastMessage, fullMessage):
             text = "У вас уже есть 5 активных мероприятий"
             keyboard = getStartEventKeyboard()
         else:
+            text = "Введите название мероприятия (не более 50 символов)"
+            keyboard = getEmptyKeyboard()
+
+
+
+
+    if lastMessage == "создать мероприятие" and len(message)<=50 and \
+        message not in ["мероприятия", "товары", "стирка", "создать мероприятие"]:
+        realDb.addEvent(user_id, message)
+        event_id = realDb.getEventId(message)
+        keyboard = createCreateKeyboardTitle(f"Далее:{event_id}")
+        text = "Нажмите далее"
+
+    if (message != None and message.split(":")[0] == "далее"
+            and realDb.haveEventId(message.split(":")[1]) and len(message) <= 100):
+        text = "Введите время мероприятия в виде ЧАСЫ:МИНУТЫ (00:05)"
+        keyboard = getEmptyKeyboard()
+
+    if  (lastMessage != None and lastMessage.split(":")[0] == "далее"
+            and realDb.haveEventId(lastMessage.split(":")[1]) and len(message) <= 100) and checkTime(message):
+        today = realDb.getNow()[0][0]
+        date = datetime.datetime(today.year, today.month, today.day, int(message[:2]), int(message[3:5]))
+        realDb.addEventTime(lastMessage.split(":")[1], date)
+        text = "Нажмите ввести место мероприятия"
+        keyboard = createCreateKeyboardTitle(f"Ввести место мероприятия:{lastMessage.split(":")[1]}")
+
+    if message.split(":")[0] == "ввести место мероприятия":
+        text = "Введите место проведения мероприятия (не более 50 символов)"
+        keyboard = getEmptyKeyboard()
+
+    if lastMessage != None and lastMessage.split(":")[0] == "ввести место мероприятия" and len(message) <= 50:
+        realDb.addEventPlace(lastMessage.split(":")[1], message)
+        text = f"Вы создали мероприятие {realDb.getEvent(lastMessage.split(":")[1]).get_title()}"
+        keyboard = getStartEventKeyboard()
+
+    if message == "удалить мероприятие":
+        if (realDb.getCountEventByUser(user_id) == 0):
+            text = "У вас нет активных мероприятий"
+            keyboard = getStartKeyboard()
+        else:
+            answer = ""
+            for i in realDb.getUsersEvents(user_id):
+                answer+=realDb.getEvent(i).toString()
+            answer+="_________Введите ID мероприятия которое вы хотите удалить"
+            text = answer
+            keyboard = getEmptyKeyboard()
+
+    if (lastMessage != None and lastMessage == "удалить мероприятие" and message.isnumeric()
+            and int(message) in realDb.getUsersEvents(user_id)):
+        text = f"Вы удалили мероприятие '{realDb.getEvent(message).get_title()}'"
+        realDb.deleteEvent(message)
+        keyboard = getStartKeyboard()
+
+    if message == "посмотреть текущие мероприятия":
+        events = realDb.getAllEventsId()
+        if len(events) == 0:
+            text = "Сейчас нет активных мероприятий"
+            keyboard = getStartEventKeyboard()
+        else:
+            answer = ""
+            for i in realDb.getAllEventsId():
+                answer += realDb.getEvent(i).toString()
+            answer += "Введите ID мероприятия на которое вы хотите записаться"
+            text = answer
+            keyboard = getStartEventKeyboard()
+
+    if (lastMessage != None and lastMessage == "посмотреть текущие мероприятия" and message.isnumeric()
+            and int(message) in realDb.getAllEventsId()):
+        if realDb.userInEvent(user_id, message):
+            text = f"Вы уже записаны на мероприятие {realDb.getEvent(message).get_title()}"
+            keyboard = getStartEventKeyboard()
+        else:
+            realDb.addParticipantToEvent(user_id, message)
+            text = f"Вы записались на мероприятие {realDb.getEvent(message).get_title()}"
+            keyboard = getStartEventKeyboard()
+
+
+
+
+
 
 
 
 
     fullMessage.setAnswer(text)
     fullMessage.setKeyboard(keyboard)
+
+
+
+
+def checkTime(time):
+    if len(time)!=5:
+        return False
+    if time[2] != ":":
+        return False
+    if not (time[:2].isnumeric() and time[3:5].isnumeric()):
+        return False
+    hour = int(time[:2])
+    minute = int(time[3:5])
+    return (0<=hour<=24 and 0<=minute<=60)
+
+
+
+
+def addEventDescriptionKeyboard(message):
+    title = []
+    title.append(f"Добавить описание мероприятия {message}")
+    title.append("Оставить без описания")
+    keyboard = createKeyboard.createKeyboard(1, 2, title)
+    return keyboard
 
 def addProductDescriptionKeyboard(product_id):
     title = []

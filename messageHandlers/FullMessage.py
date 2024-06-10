@@ -67,6 +67,8 @@ class FullMessage:
 
 
             userText = msgObject.message['text'].lower()
+            if "'" in userText:
+                userText = "-1"
             self.setUserId(userId)
             lastMessage = realDb.getLastMessage(userId)
 

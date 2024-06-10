@@ -1,43 +1,25 @@
+from dateBase import realDb
 class Event():
-    def __init__(self, id, id_creator, name, date, place, date_creation, description):
-        self.__id = id
-        self.__id_creator = id_creator
-        self.__name = name
+    def __init__(self, event_id, creator_id, title, place, date, participant):
+        self.__event_id = event_id
+        self.__creator_id = creator_id
+        self.__title = title
+        self.__place = place
         self.__date = date
-        self.__place = place
-        self.__date_creation = date_creation
-        self.__description = description
-        self.__place = place
-        self.__date_creation = date_creation
+        self.__participant = participant
 
-    def __str__(self):
-        return f'{self.__name}: {self.__date} - {self._place}: {self.__date_creation}'
+    def toString(self):
+        parti = ""
+        if self.__participant != None:
+            for i in self.__participant:
+                parti += f"@id{i}({realDb.getUserName(i)}), "
 
-    def get_id(self):
-        return self.__id
+        answer = (f"ID мероприятия: {self.__event_id}, Название: {self.__title}, Создатель: @id{self.__creator_id}({realDb.getUserName(self.__creator_id)}),"
+                  f" Место: {self.__place}, Время: {self.__date}, Участники: {parti} ____________________________________")
+        return answer
 
-    def get_id_creator(self):
-        return self.__id_creator
 
-    def get_name(self):
-        return self.__name
+    def get_title(self):
+        return self.__title
 
-    def get_date(self):
-        return self.__date
 
-    def get_place(self):
-        return self.__place
-
-    def get_date_creation(self):
-        return self.__date_creation
-
-    def get_description(self):
-        return self.__description
-
-    id = property(get_id)
-    id_creator = property(get_id_creator)
-    name = property(get_name)
-    data = property(get_date)
-    place = property(get_place)
-    date_creation = property(get_date_creation)
-    description = property(get_description)

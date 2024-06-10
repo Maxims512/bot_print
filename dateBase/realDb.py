@@ -1,5 +1,5 @@
 import datetime
-import product
+import product, event
 import psycopg2
 from configs.dbConfig import host, user, password, db_name
 
@@ -31,8 +31,8 @@ def initDb():
                 event_id SERIAL PRIMARY KEY,
                 creator_id varchar(50) NOT NULL,
                 title varchar(50) NOT NULL,
-                description varchar(100),
-                date_of_creation timestamp NOT NUll,
+                place varchar(100),
+                date timestamp,
                 participant varchar(50) ARRAY);"""
 
 
@@ -325,10 +325,9 @@ def getCountEventByUser(user_id):
     req = f"SELECT COUNT(*) FROM events WHERE creator_id = '{user_id}';"
     return request(req)[0][0]
 
-def addEvent(user_id, title, description = ""):
-    today = getNow()[0][0]
-    req = (f"INSERT INTO events (creator_id, title, description, date_of_creation) "
-           f"values ('{user_id}', '{title}', '{description}', '{today}');")
+def addEvent(user_id, title, place = ""):
+    req = (f"INSERT INTO events (creator_id, title, place) "
+           f"values ('{user_id}', '{title}', '{place}');")
     request(req)
 
 def haveEventName(title):
@@ -358,3 +357,46 @@ def deletePartipantOfEvent(user_id, event_id):
 
 def userInEvent(user_id, event_id):
     return str(user_id) in getParticipantOfEvent(event_id)
+
+def getEventId(title):
+    req = f"SELECT event_id FROM events WHERE title = '{title}'"
+    return request(req)[0][0]
+
+def addEventTime(event_id, time):
+    req = f"UPDATE events SET date = '{time}' WHERE event_id = '{event_id}';"
+    request(req)
+
+def addEventPlace(event_id, place):
+    req = f"UPDATE events SET place = '{place}' WHERE event_id = '{event_id}';"
+    request(req)
+
+def getEvent(event_id):
+    req = (f"SELECT "
+           f"creator_id, title, place, date, participant FROM events "
+           f"WHERE event_id = '{event_id}';")
+
+    mass = request(req)[0]
+    event1 = event.Event(event_id, mass[0], mass[1], mass[2], mass[3], mass[4])
+    return event1
+
+def getUsersEvents(creator_id):
+    req = f"SELECT event_id FROM events WHERE creator_id = '{creator_id}'"
+    answer = []
+    for i in request(req):
+        answer.append(int(i[0]))
+    return answer
+
+def getAllEventsId():
+    req = f"SELECT event_id FROM events;"
+    answer = []
+    for i in request(req):
+        answer.append(int(i[0]))
+    return answer
+
+
+def userInEvent(user_id, event_id):
+    parti = getParticipantOfEvent(event_id)
+    if parti != None and str(user_id) in parti:
+        return True
+    else:
+        return False
