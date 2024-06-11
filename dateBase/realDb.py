@@ -314,7 +314,7 @@ def getAllProductsId():
     return answer
 
 def productHandler():
-    req = "DELETE FROM products WHERE price = -1;"
+    req = "DELETE FROM products WHERE price = -1 or date_of_creation + '30 day' < now();"
     request(req)
 
 def deleteProduct(product_id):
@@ -325,9 +325,9 @@ def getCountEventByUser(user_id):
     req = f"SELECT COUNT(*) FROM events WHERE creator_id = '{user_id}';"
     return request(req)[0][0]
 
-def addEvent(user_id, title, place = ""):
-    req = (f"INSERT INTO events (creator_id, title, place) "
-           f"values ('{user_id}', '{title}', '{place}');")
+def addEvent(user_id, title, place = None, date = getNow()[0][0]):
+    req = (f"INSERT INTO events (creator_id, title, place, date) "
+           f"values ('{user_id}', '{title}', '{place}', '{date}');")
     request(req)
 
 def haveEventName(title):
@@ -409,3 +409,6 @@ def getPartiEventByUser(user_id):
             events.append(i)
     return events
 
+def eventHandler():
+    req = f"DELETE FROM events WHERE place = '{"None"}' or date < now()"
+    request(req)

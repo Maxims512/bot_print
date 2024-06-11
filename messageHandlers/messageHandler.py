@@ -180,6 +180,7 @@ def getAnswer(message, lastMessage, fullMessage):
             keyboard = getStartProductKeyboard()
 
     if message == "мероприятия":
+        realDb.eventHandler()
         keyboard = getStartEventKeyboard()
         text = "Выберите дальнейшее действие"
 

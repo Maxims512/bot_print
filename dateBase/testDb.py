@@ -6,22 +6,18 @@ date = datetime.datetime(2024, 6, 10, 17, 50)
 
 realDb.initDb()
 
-realDb.addEvent(111, "название", "место")
+today = realDb.getNow()
+do = datetime.datetime(2024, 6, 11, 10)
+posle = datetime.datetime(2024, 6, 11, 23)
 
-realDb.addEvent(111, "настолки", "")
-realDb.addEvent(111, "25", "")
-realDb.addEvent(111, "настки", "")
 
-realDb.addEventPlace(2, "место")
+realDb.addProduct(111, "продукт", 500, "sfg", "hht")
 
-realDb.addEventTime(2, date)
 
-realDb.addParticipantToEvent(222, 2)
 
-print(realDb.userInEvent(222, 2))
-print(realDb.getPartiEventByUser(222))
-print(len(realDb.getParticipantOfEvent(3)))
-
+print(realDb.getAllProductsId())
+realDb.productHandler()
+print(realDb.getAllProductsId())
 
 
 
